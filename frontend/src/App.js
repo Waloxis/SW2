@@ -2,6 +2,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // these are the pages we'll create later in the pages/ folder
+// LandingPage is the first thing users see before they log in
+import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import BugList from './pages/BugList';
@@ -14,8 +16,11 @@ function App() {
     <BrowserRouter>
       <Routes>
         // each Route connects a URL path to a page component
-        // when user goes to "/" they see the Login page
-        <Route path="/" element={<Login />} />
+        // when user goes to "/" they see the LandingPage first (changed from Login)
+        <Route path="/" element={<LandingPage />} />
+
+        // moved Login to its own /login route so users get there from the landing page
+        <Route path="/login" element={<Login />} />
 
         // after logging in, user goes to the dashboard
         <Route path="/dashboard" element={<Dashboard />} />

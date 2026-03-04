@@ -1,171 +1,97 @@
-// Dashboard.jsx — this is the first page users see after logging in
-// it shows a welcome message and quick links depending on the user's role
-// roles: "admin", "developer", "customer"
-
-import { useEffect, useState } from 'react';
+// Dashboard - this is the main page users see after logging in
+// it shows stats about bugs and a table of recent bug reports
+import React from 'react';
+// useNavigate lets us redirect the user to other pages when they click buttons
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axiosConfig';
 
 function Dashboard() {
-  // useNavigate lets us redirect the user to other pages programmatically
+  // create a navigate function so we can send the user to other routes
   const navigate = useNavigate();
 
-  // we store the user info and bug stats in state so React re-renders when they change
-  const [user, setUser] = useState(null);
-  const [stats, setStats] = useState({ total: 0, open: 0, inProgress: 0, resolved: 0 });
-  const [loading, setLoading] = useState(true);
-
-  // useEffect runs once when the component first loads (because of the [] at the end)
-  // we use it to grab the logged-in user's info from localStorage
-  useEffect(() => {
-    // we saved the user's info in localStorage when they logged in
-    const role = localStorage.getItem('role');
-    const username = localStorage.getItem('username');
-
-    // if there's no role, the user probably isn't logged in — send them back to login
-    if (!role) {
-      navigate('/');
-      return;
-    }
-
-    setUser({ username, role });
-
-    // fetch some basic stats about bugs from the backend
-    fetchStats();
-  }, [navigate]);
-
-  // this function calls our backend to get bug counts for the dashboard
-  const fetchStats = async () => {
-    try {
-      const response = await api.get('/bugs');
-      const bugs = response.data;
-
-      // we count how many bugs are in each status so we can show numbers on the dashboard
-      setStats({
-        total: bugs.length,
-        open: bugs.filter(b => b.status === 'OPEN').length,
-        inProgress: bugs.filter(b => b.status === 'IN_PROGRESS').length,
-        resolved: bugs.filter(b => b.status === 'RESOLVED').length,
-      });
-    } catch (error) {
-      console.log('Could not load bug stats:', error);
-    } finally {
-      // whether it worked or not, we're done loading
-      setLoading(false);
-    }
-  };
-
-  // this logs the user out by clearing their saved data and going back to login
+  // this function logs the user out and sends them back to the landing page
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    localStorage.removeItem('username');
     navigate('/');
   };
 
-  // show a loading message while we wait for data
-  if (loading) return <p>Loading dashboard...</p>;
-
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      {/* header section with welcome message and logout */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Bug Tracker Dashboard</h1>
-        <button onClick={handleLogout} style={logoutButtonStyle}>
+    <div>
+      {/* Navbar - same style as the landing page to keep things consistent */}
+      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 20px', backgroundColor: '#333', color: 'white' }}>
+        {/* App name on the left */}
+        <h1 style={{ margin: 0, fontSize: '20px' }}>Bug Tracker</h1>
+        {/* Logout button on the right - sends user back to the landing page */}
+        <button onClick={handleLogout} style={{ padding: '8px 16px', backgroundColor: '#e74c3c', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
           Logout
         </button>
-      </div>
+      </nav>
 
-      {/* show who is logged in and what role they have */}
-      {user && (
-        <p style={{ fontSize: '18px', color: '#555' }}>
-          Welcome, <strong>{user.username}</strong>! You are logged in as: <strong>{user.role}</strong>
+      {/* Main content area - has some padding so things aren't right against the edges */}
+      <div style={{ padding: '30px', maxWidth: '900px', margin: '0 auto' }}>
+
+        {/* Welcome section - greets the user when they land on the dashboard */}
+        <h2 style={{ fontSize: '28px', marginBottom: '5px' }}>Welcome back!</h2>
+        <p style={{ fontSize: '16px', color: '#555', marginBottom: '30px' }}>
+          Here is what is going on with your projects today.
         </p>
-      )}
 
-      {/* stats cards — these show a quick overview of bug counts */}
-      <div style={statsContainerStyle}>
-        <div style={{ ...statCardStyle, borderLeft: '4px solid #3498db' }}>
-          <h3>{stats.total}</h3>
-          <p>Total Bugs</p>
-        </div>
-        <div style={{ ...statCardStyle, borderLeft: '4px solid #e74c3c' }}>
-          <h3>{stats.open}</h3>
-          <p>Open</p>
-        </div>
-        <div style={{ ...statCardStyle, borderLeft: '4px solid #f39c12' }}>
-          <h3>{stats.inProgress}</h3>
-          <p>In Progress</p>
-        </div>
-        <div style={{ ...statCardStyle, borderLeft: '4px solid #2ecc71' }}>
-          <h3>{stats.resolved}</h3>
-          <p>Resolved</p>
-        </div>
-      </div>
+        {/* Stats cards section - shows a quick overview of bug counts */}
+        {/* All values are 0 for now since the backend is not connected yet */}
+        <div style={{ display: 'flex', gap: '15px', marginBottom: '40px', flexWrap: 'wrap' }}>
 
-      {/* navigation buttons — which ones show up depends on the user's role */}
-      <h2>Quick Actions</h2>
-      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-        {/* everyone can see the bug list */}
-        <button onClick={() => navigate('/bugs')} style={navButtonStyle}>
-          View All Bugs
-        </button>
+          {/* Card 1 - Total Bugs */}
+          <div style={{ flex: '1', minWidth: '150px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', textAlign: 'center', borderLeft: '4px solid #3498db' }}>
+            <h3 style={{ fontSize: '32px', margin: '0 0 5px 0' }}>0</h3>
+            <p style={{ margin: 0, color: '#555' }}>Total Bugs</p>
+          </div>
 
-        {/* only customers can submit new bugs (they're the ones who find them!) */}
-        {user?.role === 'customer' && (
-          <button onClick={() => navigate('/bugs/new')} style={navButtonStyle}>
-            Submit New Bug
-          </button>
-        )}
+          {/* Card 2 - Open bugs that haven't been worked on yet */}
+          <div style={{ flex: '1', minWidth: '150px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', textAlign: 'center', borderLeft: '4px solid #e74c3c' }}>
+            <h3 style={{ fontSize: '32px', margin: '0 0 5px 0' }}>0</h3>
+            <p style={{ margin: 0, color: '#555' }}>Open</p>
+          </div>
 
-        {/* only admins can access the admin panel */}
-        {user?.role === 'admin' && (
-          <button onClick={() => navigate('/admin')} style={navButtonStyle}>
-            Admin Panel
-          </button>
-        )}
+          {/* Card 3 - Bugs that are currently being worked on */}
+          <div style={{ flex: '1', minWidth: '150px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', textAlign: 'center', borderLeft: '4px solid #f39c12' }}>
+            <h3 style={{ fontSize: '32px', margin: '0 0 5px 0' }}>0</h3>
+            <p style={{ margin: 0, color: '#555' }}>In Progress</p>
+          </div>
+
+          {/* Card 4 - Bugs that have been fixed */}
+          <div style={{ flex: '1', minWidth: '150px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', textAlign: 'center', borderLeft: '4px solid #2ecc71' }}>
+            <h3 style={{ fontSize: '32px', margin: '0 0 5px 0' }}>0</h3>
+            <p style={{ margin: 0, color: '#555' }}>Resolved</p>
+          </div>
+
+        </div>
+
+        {/* Recent Bugs section - shows a table of the latest bug reports */}
+        <h3 style={{ fontSize: '22px', marginBottom: '15px' }}>Recent Bugs</h3>
+
+        {/* Table to display bug reports - no rows yet since backend isn't connected */}
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          {/* Table header - defines the column names */}
+          <thead>
+            <tr style={{ backgroundColor: '#333', color: 'white' }}>
+              <th style={{ padding: '10px', textAlign: 'left' }}>ID</th>
+              <th style={{ padding: '10px', textAlign: 'left' }}>Title</th>
+              <th style={{ padding: '10px', textAlign: 'left' }}>Severity</th>
+              <th style={{ padding: '10px', textAlign: 'left' }}>Status</th>
+              <th style={{ padding: '10px', textAlign: 'left' }}>Date</th>
+            </tr>
+          </thead>
+          {/* Table body - empty for now, just shows a placeholder message */}
+          <tbody>
+            <tr>
+              <td colSpan="5" style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
+                No bugs reported yet.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
       </div>
     </div>
   );
 }
-
-// --- styles ---
-// we define styles as objects because React uses inline styles like this
-// in a real project you'd probably use CSS files or a library like Tailwind
-
-const logoutButtonStyle = {
-  padding: '8px 16px',
-  backgroundColor: '#e74c3c',
-  color: 'white',
-  border: 'none',
-  borderRadius: '4px',
-  cursor: 'pointer',
-};
-
-const statsContainerStyle = {
-  display: 'flex',
-  gap: '15px',
-  marginBottom: '30px',
-  flexWrap: 'wrap',
-};
-
-const statCardStyle = {
-  flex: '1',
-  minWidth: '150px',
-  padding: '15px',
-  backgroundColor: '#f9f9f9',
-  borderRadius: '8px',
-  textAlign: 'center',
-};
-
-const navButtonStyle = {
-  padding: '12px 24px',
-  backgroundColor: '#3498db',
-  color: 'white',
-  border: 'none',
-  borderRadius: '6px',
-  cursor: 'pointer',
-  fontSize: '16px',
-};
 
 export default Dashboard;
