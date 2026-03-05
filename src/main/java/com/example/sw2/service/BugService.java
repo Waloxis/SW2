@@ -1,9 +1,9 @@
-package com.bugtracker.service;
+package com.example.sw2.service;
 
-import com.bugtracker.dto.BugDto;
-import com.bugtracker.dto.DashboardStats;
-import com.bugtracker.model.Bug;
-import com.bugtracker.repository.BugRepository;
+import com.example.sw2.dto.BugDto;
+import com.example.sw2.dto.DashboardStats;
+import com.example.sw2.model.Bug;
+import com.example.sw2.repository.BugRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

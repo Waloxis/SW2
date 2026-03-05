@@ -1,4 +1,4 @@
-package com.bugtracker.dto;
+package com.example.sw2.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

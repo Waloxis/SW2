@@ -1,6 +1,6 @@
-package com.bugtracker.dto;
+package com.example.sw2.dto;
 
-import com.bugtracker.model.Bug;
+import com.example.sw2.model.Bug;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

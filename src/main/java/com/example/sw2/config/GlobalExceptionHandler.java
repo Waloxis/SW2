@@ -1,4 +1,4 @@
-package com.bugtracker.config;
+package com.example.sw2.config;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;

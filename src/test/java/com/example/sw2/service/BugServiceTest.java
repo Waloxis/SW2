@@ -1,15 +1,14 @@
-package com.bugtracker.service;
+package com.example.sw2.service;
 
-import com.bugtracker.dto.BugDto;
-import com.bugtracker.dto.DashboardStats;
-import com.bugtracker.model.Bug;
-import com.bugtracker.repository.BugRepository;
+import com.example.sw2.dto.BugDto;
+import com.example.sw2.dto.DashboardStats;
+import com.example.sw2.model.Bug;
+import com.example.sw2.repository.BugRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;

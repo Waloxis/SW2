@@ -1,6 +1,6 @@
-package com.example.sw2.controller;
+package com.example.sw2.repository;
 
-import com.bugtracker.model.Bug;
+import com.example.sw2.model.Bug;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

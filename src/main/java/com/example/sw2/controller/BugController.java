@@ -1,9 +1,9 @@
-package com.bugtracker.controller;
+package com.example.sw2.controller;
 
-import com.bugtracker.dto.BugDto;
-import com.bugtracker.dto.DashboardStats;
-import com.bugtracker.model.Bug;
-import com.bugtracker.service.BugService;
+import com.example.sw2.dto.BugDto;
+import com.example.sw2.dto.DashboardStats;
+import com.example.sw2.model.Bug;
+import com.example.sw2.service.BugService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

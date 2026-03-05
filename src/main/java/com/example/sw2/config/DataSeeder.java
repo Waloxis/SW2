@@ -1,7 +1,7 @@
-package com.bugtracker.config;
+package com.example.sw2.config;
 
-import com.bugtracker.model.Bug;
-import com.bugtracker.repository.BugRepository;
+import com.example.sw2.model.Bug;
+import com.example.sw2.repository.BugRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
