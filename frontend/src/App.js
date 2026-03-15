@@ -1,8 +1,10 @@
-// react router lets us have multiple pages in our app without reloading the browser
+// App.js
+// this file sets up all the pages and their urls
+// I think of it like a table of contents for the app
+
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-// these are the pages we'll create later in the pages/ folder
-// LandingPage is the first thing users see before they log in
+// all the page components
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -12,26 +14,24 @@ import AdminPanel from './pages/AdminPanel';
 
 function App() {
   return (
-    // BrowserRouter wraps everything so routing works throughout the whole app
     <BrowserRouter>
       <Routes>
-        // each Route connects a URL path to a page component
-        // when user goes to "/" they see the LandingPage first (changed from Login)
+        {/* home page */}
         <Route path="/" element={<LandingPage />} />
 
-        // moved Login to its own /login route so users get there from the landing page
+        {/* login page */}
         <Route path="/login" element={<Login />} />
 
-        // after logging in, user goes to the dashboard
+        {/* main dashboard */}
         <Route path="/dashboard" element={<Dashboard />} />
 
-        // this page shows the list of all bug reports
+        {/* bug list page */}
         <Route path="/bugs" element={<BugList />} />
 
-        // this page has the form to submit a new bug
+        {/* form to report a new bug */}
         <Route path="/bugs/new" element={<BugForm />} />
 
-        // only admins will use this page to manage bugs and users
+        {/* admin only page */}
         <Route path="/admin" element={<AdminPanel />} />
       </Routes>
     </BrowserRouter>

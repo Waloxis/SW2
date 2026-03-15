@@ -1,7 +1,6 @@
-// AdminPanel.jsx — this page is only for admins
-// admins can:
-//   1. assign bugs to developers
-//   2. approve bugs that developers have marked as resolved
+// AdminPanel.jsx
+// this is the admin page where admins can assign bugs and approve fixes
+// only admins should be able to see this page
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -10,30 +9,28 @@ import api from '../api/axiosConfig';
 function AdminPanel() {
   const navigate = useNavigate();
 
-  // state for our data
-  const [bugs, setBugs] = useState([]);             // all bug reports
-  const [developers, setDevelopers] = useState([]);  // list of developer users (for the assign dropdown)
+  // these variables keep track of the data on this page
+  const [bugs, setBugs] = useState([]);
+  const [developers, setDevelopers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // check that the user is actually an admin before showing this page
+    // check if the user is an admin first
     const role = localStorage.getItem('role');
     if (role !== 'admin') {
-      // if they're not an admin, kick them back to the dashboard
       alert('Access denied. Admins only!');
       navigate('/dashboard');
       return;
     }
 
-    // fetch both bugs and developers at the same time
     loadData();
   }, [navigate]);
 
+  // gets the bugs and the list of developers from the backend
   const loadData = async () => {
     try {
-      // Promise.all lets us make two API calls at the same time instead of waiting
-      // for one to finish before starting the other — it's faster this way
+      // I used Promise.all here so both requests happen at once
       const [bugsResponse, devsResponse] = await Promise.all([
         api.get('/bugs'),
         api.get('/users/developers'),
@@ -49,14 +46,12 @@ function AdminPanel() {
     }
   };
 
-  // this function assigns a bug to a developer
-  // the admin picks a developer from the dropdown and we send it to the backend
+  // when the admin picks a developer from the dropdown it calls this
   const handleAssign = async (bugId, developerId) => {
-    if (!developerId) return; // do nothing if they picked the blank option
+    if (!developerId) return;
 
     try {
       await api.put(`/bugs/${bugId}/assign`, { developerId });
-      // refresh the bug list to show the updated assignment
       loadData();
     } catch (err) {
       console.log('Error assigning bug:', err);
@@ -64,12 +59,10 @@ function AdminPanel() {
     }
   };
 
-  // this function approves a resolved bug
-  // only bugs with status "RESOLVED" can be approved
+  // approves a bug that a developer already resolved
   const handleApprove = async (bugId) => {
     try {
       await api.put(`/bugs/${bugId}/approve`);
-      // refresh after approving
       loadData();
     } catch (err) {
       console.log('Error approving bug:', err);
@@ -77,24 +70,23 @@ function AdminPanel() {
     }
   };
 
-  // helper to get a color for each status (same as BugList)
+  // gives back a color depending on the status
   const getStatusColor = (status) => {
-    switch (status) {
-      case 'OPEN': return '#e74c3c';
-      case 'IN_PROGRESS': return '#f39c12';
-      case 'RESOLVED': return '#2ecc71';
-      case 'APPROVED': return '#3498db';
-      default: return '#999';
-    }
+    if (status === 'OPEN') return '#cc0000';
+    if (status === 'IN_PROGRESS') return '#cc9900';
+    if (status === 'RESOLVED') return '#009933';
+    if (status === 'APPROVED') return '#0066cc';
+    return '#999';
   };
 
   if (loading) return <p>Loading admin panel...</p>;
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1100px', margin: '0 auto' }}>
+    <div style={{ padding: '20px', maxWidth: '1100px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1>Admin Panel</h1>
-        <button onClick={() => navigate('/dashboard')} style={backButtonStyle}>
+        {/* go back button */}
+        <button onClick={() => navigate('/dashboard')} style={{ padding: '8px 16px', backgroundColor: '#0066cc', color: 'white', border: '1px solid #0066cc', cursor: 'pointer' }}>
           Back to Dashboard
         </button>
       </div>
@@ -104,27 +96,27 @@ function AdminPanel() {
       {bugs.length === 0 ? (
         <p>No bugs in the system yet.</p>
       ) : (
-        <table style={tableStyle}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px', border: '1px solid #cccccc' }}>
           <thead>
             <tr style={{ backgroundColor: '#f0f0f0' }}>
-              <th style={thStyle}>ID</th>
-              <th style={thStyle}>Title</th>
-              <th style={thStyle}>Severity</th>
-              <th style={thStyle}>Status</th>
-              <th style={thStyle}>Assign To Developer</th>
-              <th style={thStyle}>Actions</th>
+              <th style={{ textAlign: 'left', padding: '10px', borderBottom: '2px solid #ccc', fontSize: '14px' }}>ID</th>
+              <th style={{ textAlign: 'left', padding: '10px', borderBottom: '2px solid #ccc', fontSize: '14px' }}>Title</th>
+              <th style={{ textAlign: 'left', padding: '10px', borderBottom: '2px solid #ccc', fontSize: '14px' }}>Severity</th>
+              <th style={{ textAlign: 'left', padding: '10px', borderBottom: '2px solid #ccc', fontSize: '14px' }}>Status</th>
+              <th style={{ textAlign: 'left', padding: '10px', borderBottom: '2px solid #ccc', fontSize: '14px' }}>Assign To</th>
+              <th style={{ textAlign: 'left', padding: '10px', borderBottom: '2px solid #ccc', fontSize: '14px' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {bugs.map((bug) => (
               <tr key={bug.id} style={{ borderBottom: '1px solid #eee' }}>
-                <td style={tdStyle}>{bug.id}</td>
-                <td style={tdStyle}>{bug.title}</td>
-                <td style={tdStyle}>{bug.severity}</td>
-                <td style={tdStyle}>
+                <td style={{ padding: '12px' }}>{bug.id}</td>
+                <td style={{ padding: '12px' }}>{bug.title}</td>
+                <td style={{ padding: '12px' }}>{bug.severity}</td>
+                <td style={{ padding: '12px' }}>
+                  {/* colored status label */}
                   <span style={{
-                    padding: '4px 8px',
-                    borderRadius: '4px',
+                    padding: '3px 8px',
                     color: 'white',
                     backgroundColor: getStatusColor(bug.status),
                     fontSize: '13px',
@@ -133,15 +125,15 @@ function AdminPanel() {
                   </span>
                 </td>
 
-                {/* dropdown to assign a developer to this bug */}
-                <td style={tdStyle}>
+                {/* developer dropdown */}
+                <td style={{ padding: '12px' }}>
                   <select
                     onChange={(e) => handleAssign(bug.id, e.target.value)}
                     defaultValue=""
-                    style={selectStyle}
+                    style={{ padding: '6px', border: '1px solid #ccc', width: '100%' }}
                   >
                     <option value="">
-                      {bug.assignedTo ? bug.assignedTo : '-- Select Developer --'}
+                      {bug.assignedTo ? bug.assignedTo : '-- Select --'}
                     </option>
                     {developers.map((dev) => (
                       <option key={dev.id} value={dev.id}>
@@ -151,14 +143,14 @@ function AdminPanel() {
                   </select>
                 </td>
 
-                {/* approve button — only shows for resolved bugs */}
-                <td style={tdStyle}>
+                {/* approve button only shows up if the bug is resolved */}
+                <td style={{ padding: '12px' }}>
                   {bug.status === 'RESOLVED' ? (
-                    <button onClick={() => handleApprove(bug.id)} style={approveButtonStyle}>
+                    <button onClick={() => handleApprove(bug.id)} style={{ padding: '5px 12px', backgroundColor: '#0066cc', color: 'white', border: 'none', cursor: 'pointer' }}>
                       Approve Fix
                     </button>
                   ) : bug.status === 'APPROVED' ? (
-                    <span style={{ color: '#3498db', fontWeight: 'bold' }}>Approved</span>
+                    <span style={{ color: '#0066cc', fontWeight: 'bold' }}>Approved</span>
                   ) : (
                     <span style={{ color: '#999' }}>Waiting...</span>
                   )}
@@ -171,47 +163,5 @@ function AdminPanel() {
     </div>
   );
 }
-
-// --- styles ---
-const backButtonStyle = {
-  padding: '8px 16px',
-  backgroundColor: '#95a5a6',
-  color: 'white',
-  border: 'none',
-  borderRadius: '4px',
-  cursor: 'pointer',
-};
-
-const tableStyle = {
-  width: '100%',
-  borderCollapse: 'collapse',
-  marginTop: '10px',
-};
-
-const thStyle = {
-  textAlign: 'left',
-  padding: '12px',
-  borderBottom: '2px solid #ddd',
-};
-
-const tdStyle = {
-  padding: '12px',
-};
-
-const selectStyle = {
-  padding: '6px',
-  borderRadius: '4px',
-  border: '1px solid #ccc',
-  width: '100%',
-};
-
-const approveButtonStyle = {
-  padding: '6px 14px',
-  backgroundColor: '#3498db',
-  color: 'white',
-  border: 'none',
-  borderRadius: '4px',
-  cursor: 'pointer',
-};
 
 export default AdminPanel;

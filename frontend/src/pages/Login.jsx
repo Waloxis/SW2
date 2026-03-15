@@ -1,52 +1,65 @@
-// Login - this is the login page where users enter their username and password
+// Login.jsx
+// this is the login page where users type their username and password
+// right now it doesnt actually talk to the backend yet
+
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
-  // useState lets us store the values the user types into the form fields
-  // username stores what the user types in the username input
+  // these keep track of what the user types in
   const [username, setUsername] = useState('');
-  // password stores what the user types in the password input
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  // this function runs when the user clicks the submit button
-  // e.preventDefault() stops the page from reloading (default form behavior)
+  const navigate = useNavigate();
+
+  // this runs when the user clicks sign in
+  // TEMPORARY: this is just a fake login so we can test the frontend without the backend
+  // it only checks if the fields arent empty, it doesnt actually verify anything
+  // once the backend team finishes the /api/auth/login endpoint we need to
+  // replace this with a real API call that sends the username and password
   const handleSubmit = (e) => {
     e.preventDefault();
-    // for now just log the values - we'll connect this to the backend later
-    console.log('Login attempt:', username, password);
+    if (username.trim() !== '' && password.trim() !== '') {
+      navigate('/dashboard');
+    } else {
+      setError('Please enter both username and password.');
+    }
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-      {/* Login form container - centered on the page */}
-      <form onSubmit={handleSubmit} style={{ padding: '40px', backgroundColor: '#f5f5f5', borderRadius: '8px', width: '300px' }}>
-        {/* Form title */}
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
+      {/* the login form box */}
+      <form onSubmit={handleSubmit} style={{ padding: '40px', backgroundColor: '#f5f5f5', border: '1px solid #cccccc', width: '300px' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Login</h2>
 
-        {/* Username input field */}
+        {/* username input */}
         <div style={{ marginBottom: '15px' }}>
           <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px' }}>Username</label>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+            style={{ width: '100%', padding: '8px', border: '1px solid #ccc', boxSizing: 'border-box' }}
           />
         </div>
 
-        {/* Password input field */}
+        {/* password input */}
         <div style={{ marginBottom: '20px' }}>
           <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px' }}>Password</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+            style={{ width: '100%', padding: '8px', border: '1px solid #ccc', boxSizing: 'border-box' }}
           />
         </div>
 
-        {/* Submit button - sends the form data when clicked */}
-        <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#333', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '16px' }}>
+        {/* shows up if they didnt fill in the fields */}
+        {error && <p style={{ color: 'red', fontSize: '14px', marginBottom: '10px' }}>{error}</p>}
+
+        {/* sign in button */}
+        <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#0066cc', color: 'white', border: '1px solid #0066cc', cursor: 'pointer', fontSize: '16px' }}>
           Sign In
         </button>
       </form>
