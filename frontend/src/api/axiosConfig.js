@@ -6,7 +6,7 @@ import axios from 'axios';
 
 // the backend runs on port 8080
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: 'http://localhost:8080/api/v1',
 });
 
 // this sticks the login token onto every request

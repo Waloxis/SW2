@@ -32,7 +32,7 @@ function BugList() {
   const fetchBugs = async () => {
     try {
       const response = await api.get('/bugs');
-      setBugs(response.data);
+      setBugs(response.data.content);
     } catch (err) {
       console.log('Error fetching bugs:', err);
       setError('Failed to load bugs. Make sure the backend is running.');

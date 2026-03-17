@@ -1,22 +1,76 @@
 // Dashboard.jsx
 // This is the main dashboard page that users see after they login
-// It shows some stats and a table of recent bugs
-// I followed the Coursera React course structure for this
-// TODO: connect this to the backend API later
+// It shows stats from the backend and a table of recent bugs
+// We use useEffect to fetch data when the page loads and useState to store it
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 // useNavigate hook - we need this to send the user to different pages
 import { useNavigate } from 'react-router-dom';
+// this is the axios instance we set up with the backend base URL
+import api from '../api/axiosConfig';
 
 function Dashboard() {
   // create navigate function so we can redirect the user
   const navigate = useNavigate();
 
-  // logout function - sends user back to the home page
-  // later we will also clear the auth token here
+  // these hold the stats we get back from the backend
+  // they start at 0 and get updated once the API call finishes
+  const [totalBugs, setTotalBugs] = useState(0);
+  const [openBugs, setOpenBugs] = useState(0);
+  const [inProgressBugs, setInProgressBugs] = useState(0);
+  const [resolvedBugs, setResolvedBugs] = useState(0);
+
+  // this holds the list of recent bugs for the table
+  // starts as an empty array until the API gives us data
+  const [recentBugs, setRecentBugs] = useState([]);
+
+  // loading state so we can show a message while waiting for data
+  const [loading, setLoading] = useState(true);
+
+  // useEffect runs once when the component first mounts (because of the empty [] at the end)
+  // this is where we call the backend to get dashboard data
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        // make a GET request to /dashboard on our backend
+        const response = await api.get('/dashboard');
+        // pull out the data from the response and set each piece of state
+        setTotalBugs(response.data.totalBugs);
+        setOpenBugs(response.data.openBugs);
+        setInProgressBugs(response.data.inProgressBugs);
+        setResolvedBugs(response.data.resolvedBugs);
+        setRecentBugs(response.data.recentBugs);
+      } catch (err) {
+        // if something goes wrong just log it to the console for now
+        console.log('Error fetching dashboard stats:', err);
+      } finally {
+        // whether it worked or not, stop showing the loading message
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
+  }, []);
+
+  // logout function - clears localStorage and sends user back to the home page
   const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('username');
     navigate('/');
   };
+
+  // helper function that returns a color based on the bug status
+  // makes it easy to visually tell statuses apart in the table
+  const getStatusColor = (status) => {
+    if (status === 'OPEN') return '#cc0000';
+    if (status === 'IN_PROGRESS') return '#cc9900';
+    if (status === 'RESOLVED') return '#009933';
+    return '#999';
+  };
+
+  // show a loading message while we wait for the API response
+  if (loading) return <p style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>Loading dashboard...</p>;
 
   return (
     // main wrapper div
@@ -38,7 +92,7 @@ function Dashboard() {
           Bug Tracker
         </h1>
 
-        {/* logout button - takes user back to landing page */}
+        {/* logout button - clears session and takes user back to landing page */}
         <button
           onClick={handleLogout}
           style={{
@@ -78,9 +132,8 @@ function Dashboard() {
         </p>
 
         {/* ========== STATS CARDS ========== */}
-        {/* these cards show a quick summary of bug counts */}
-        {/* all values are 0 because backend is not connected yet */}
-        {/* I used flexbox to put them in a row */}
+        {/* these cards show a quick summary of bug counts from the backend */}
+        {/* the numbers come from the useState variables we set in useEffect */}
         <div style={{
           display: 'flex',
           gap: '15px',
@@ -99,8 +152,8 @@ function Dashboard() {
             borderTop: '4px solid #0066cc',
             textAlign: 'center',
           }}>
-            {/* the number */}
-            <h3 style={{ fontSize: '30px', margin: '0 0 5px 0', color: '#0066cc' }}>0</h3>
+            {/* the number - now comes from the backend instead of being hardcoded */}
+            <h3 style={{ fontSize: '30px', margin: '0 0 5px 0', color: '#0066cc' }}>{totalBugs}</h3>
             {/* label */}
             <p style={{ margin: 0, color: '#555555', fontSize: '14px' }}>Total Bugs</p>
           </div>
@@ -115,7 +168,7 @@ function Dashboard() {
             borderTop: '4px solid #cc0000',
             textAlign: 'center',
           }}>
-            <h3 style={{ fontSize: '30px', margin: '0 0 5px 0', color: '#0066cc' }}>0</h3>
+            <h3 style={{ fontSize: '30px', margin: '0 0 5px 0', color: '#0066cc' }}>{openBugs}</h3>
             <p style={{ margin: 0, color: '#555555', fontSize: '14px' }}>Open</p>
           </div>
 
@@ -129,7 +182,7 @@ function Dashboard() {
             borderTop: '4px solid #cc9900',
             textAlign: 'center',
           }}>
-            <h3 style={{ fontSize: '30px', margin: '0 0 5px 0', color: '#0066cc' }}>0</h3>
+            <h3 style={{ fontSize: '30px', margin: '0 0 5px 0', color: '#0066cc' }}>{inProgressBugs}</h3>
             <p style={{ margin: 0, color: '#555555', fontSize: '14px' }}>In Progress</p>
           </div>
 
@@ -143,15 +196,15 @@ function Dashboard() {
             borderTop: '4px solid #009933',
             textAlign: 'center',
           }}>
-            <h3 style={{ fontSize: '30px', margin: '0 0 5px 0', color: '#0066cc' }}>0</h3>
+            <h3 style={{ fontSize: '30px', margin: '0 0 5px 0', color: '#0066cc' }}>{resolvedBugs}</h3>
             <p style={{ margin: 0, color: '#555555', fontSize: '14px' }}>Resolved</p>
           </div>
 
         </div>
 
         {/* ========== RECENT BUGS TABLE ========== */}
-        {/* this section shows the latest bug reports in a table */}
-        {/* the table is empty right now because we dont have backend data yet */}
+        {/* this section shows the latest bug reports from the backend */}
+        {/* recentBugs is an array we got from the /dashboard endpoint */}
         <h3 style={{
           fontSize: '20px',
           marginBottom: '12px',
@@ -177,13 +230,41 @@ function Dashboard() {
               <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid #cccccc', fontSize: '14px', color: '#333333' }}>Date</th>
             </tr>
           </thead>
-          {/* table body - no data yet so we show a message */}
           <tbody>
-            <tr>
-              <td colSpan="5" style={{ padding: '20px', textAlign: 'center', color: '#999999', fontSize: '14px' }}>
-                No bugs reported yet.
-              </td>
-            </tr>
+            {/* if there are no recent bugs, show a placeholder message */}
+            {/* otherwise loop through the recentBugs array and make a row for each one */}
+            {recentBugs.length === 0 ? (
+              <tr>
+                <td colSpan="5" style={{ padding: '20px', textAlign: 'center', color: '#999999', fontSize: '14px' }}>
+                  No bugs reported yet.
+                </td>
+              </tr>
+            ) : (
+              // .map() loops through each bug and creates a table row
+              // the key prop helps React keep track of which row is which
+              recentBugs.map((bug) => (
+                <tr key={bug.id} style={{ borderBottom: '1px solid #eee' }}>
+                  <td style={{ padding: '10px', fontSize: '14px' }}>{bug.id}</td>
+                  <td style={{ padding: '10px', fontSize: '14px' }}>{bug.title}</td>
+                  <td style={{ padding: '10px', fontSize: '14px' }}>{bug.severity}</td>
+                  {/* status gets a colored background so its easy to spot */}
+                  <td style={{ padding: '10px', fontSize: '14px' }}>
+                    <span style={{
+                      padding: '3px 8px',
+                      color: 'white',
+                      backgroundColor: getStatusColor(bug.status),
+                      fontSize: '13px',
+                    }}>
+                      {bug.status}
+                    </span>
+                  </td>
+                  {/* show the date the bug was created, formatted nicely */}
+                  <td style={{ padding: '10px', fontSize: '14px' }}>
+                    {new Date(bug.createdAt).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
 
