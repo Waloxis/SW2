@@ -36,7 +36,7 @@ function LandingPage() {
       }}>
         {/* app name - I just used a h1 tag for this */}
         <h1 style={{ margin: 0, fontSize: '22px', color: '#0066cc' }}>
-          Bug Tracker
+          BugTracer
         </h1>
 
         {/* login button */}
@@ -70,7 +70,7 @@ function LandingPage() {
           marginBottom: '12px',
           fontWeight: 'bold',
         }}>
-          Bug Tracker - Work in Progress
+          BugTracer: Your New Favorite Bug Tracker
         </h2>
 
         {/* description paragraph */}

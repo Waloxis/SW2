@@ -74,7 +74,7 @@ function AdminPanel() {
         backgroundColor: '#f0f0f0',
         borderBottom: '2px solid #cccccc',
       }}>
-        <h1 style={{ margin: 0, fontSize: '22px', color: '#0066cc' }}>Bug Tracker</h1>
+        <h1 style={{ margin: 0, fontSize: '22px', color: '#0066cc' }}>BugTracer</h1>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           <button onClick={() => navigate('/dashboard')} style={{ padding: '8px 16px', backgroundColor: 'transparent', color: '#0066cc', border: 'none', cursor: 'pointer', fontSize: '14px' }}>Dashboard</button>
           <button onClick={() => navigate('/bugs')} style={{ padding: '8px 16px', backgroundColor: 'transparent', color: '#0066cc', border: 'none', cursor: 'pointer', fontSize: '14px' }}>Bugs</button>

@@ -89,7 +89,7 @@ function Dashboard() {
       }}>
         {/* app name */}
         <h1 style={{ margin: 0, fontSize: '22px', color: '#0066cc' }}>
-          Bug Tracker
+          BugTracer
         </h1>
 
         {/* nav links */}

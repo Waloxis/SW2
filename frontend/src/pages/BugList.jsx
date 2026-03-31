@@ -78,7 +78,7 @@ function BugList() {
         borderBottom: '2px solid #cccccc',
       }}>
         <h1 style={{ margin: 0, fontSize: '22px', color: '#0066cc' }}>
-          Bug Tracker
+          BugTracer
         </h1>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           <button onClick={() => navigate('/dashboard')} style={{ padding: '8px 16px', backgroundColor: 'transparent', color: '#0066cc', border: 'none', cursor: 'pointer', fontSize: '14px' }}>Dashboard</button>
