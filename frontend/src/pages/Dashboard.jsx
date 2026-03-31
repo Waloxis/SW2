@@ -92,20 +92,27 @@ function Dashboard() {
           Bug Tracker
         </h1>
 
-        {/* logout button - clears session and takes user back to landing page */}
-        <button
-          onClick={handleLogout}
-          style={{
-            padding: '8px 18px',
-            backgroundColor: '#0066cc',
-            color: 'white',
-            border: '1px solid #0066cc',
-            cursor: 'pointer',
-            fontSize: '14px',
-          }}
-        >
-          Logout
-        </button>
+        {/* nav links */}
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <button onClick={() => navigate('/bugs')} style={{ padding: '8px 16px', backgroundColor: 'transparent', color: '#0066cc', border: 'none', cursor: 'pointer', fontSize: '14px' }}>Bugs</button>
+          <button onClick={() => navigate('/bugs/new')} style={{ padding: '8px 16px', backgroundColor: 'transparent', color: '#0066cc', border: 'none', cursor: 'pointer', fontSize: '14px' }}>Submit Bug</button>
+          {localStorage.getItem('role') === 'admin' && (
+            <button onClick={() => navigate('/admin')} style={{ padding: '8px 16px', backgroundColor: 'transparent', color: '#0066cc', border: 'none', cursor: 'pointer', fontSize: '14px' }}>Admin</button>
+          )}
+          <button
+            onClick={handleLogout}
+            style={{
+              padding: '8px 18px',
+              backgroundColor: '#0066cc',
+              color: 'white',
+              border: '1px solid #0066cc',
+              cursor: 'pointer',
+              fontSize: '14px',
+            }}
+          >
+            Logout
+          </button>
+        </div>
       </nav>
 
       {/* ========== MAIN CONTENT ========== */}

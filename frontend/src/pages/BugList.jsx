@@ -63,86 +63,124 @@ function BugList() {
   };
 
   // show loading text while we wait
-  if (loading) return <p>Loading bugs...</p>;
+  if (loading) return <p style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>Loading bugs...</p>;
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Bug Reports</h1>
-        {/* back button */}
-        <button onClick={() => navigate('/dashboard')} style={{ padding: '8px 16px', backgroundColor: '#0066cc', color: 'white', border: '1px solid #0066cc', cursor: 'pointer' }}>
-          Back to Dashboard
-        </button>
-      </div>
+    <div style={{ fontFamily: 'Arial, sans-serif', margin: '0', padding: '0' }}>
 
-      {/* error message */}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {/* navbar */}
+      <nav style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '12px 25px',
+        backgroundColor: '#f0f0f0',
+        borderBottom: '2px solid #cccccc',
+      }}>
+        <h1 style={{ margin: 0, fontSize: '22px', color: '#0066cc' }}>
+          Bug Tracker
+        </h1>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <button onClick={() => navigate('/dashboard')} style={{ padding: '8px 16px', backgroundColor: 'transparent', color: '#0066cc', border: 'none', cursor: 'pointer', fontSize: '14px' }}>Dashboard</button>
+          <button onClick={() => navigate('/bugs/new')} style={{ padding: '8px 16px', backgroundColor: 'transparent', color: '#0066cc', border: 'none', cursor: 'pointer', fontSize: '14px' }}>Submit Bug</button>
+          {localStorage.getItem('role') === 'admin' && (
+            <button onClick={() => navigate('/admin')} style={{ padding: '8px 16px', backgroundColor: 'transparent', color: '#0066cc', border: 'none', cursor: 'pointer', fontSize: '14px' }}>Admin</button>
+          )}
+          <button onClick={() => { localStorage.clear(); navigate('/'); }} style={{ padding: '8px 18px', backgroundColor: '#0066cc', color: 'white', border: '1px solid #0066cc', cursor: 'pointer', fontSize: '14px' }}>Logout</button>
+        </div>
+      </nav>
 
-      {/* if theres no bugs show a message */}
-      {bugs.length === 0 ? (
-        <p>No bugs reported yet.</p>
-      ) : (
-        // bug table
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px', border: '1px solid #cccccc' }}>
-          <thead>
-            <tr style={{ backgroundColor: '#f0f0f0' }}>
-              <th style={{ textAlign: 'left', padding: '10px', borderBottom: '2px solid #ccc', fontSize: '14px' }}>ID</th>
-              <th style={{ textAlign: 'left', padding: '10px', borderBottom: '2px solid #ccc', fontSize: '14px' }}>Title</th>
-              <th style={{ textAlign: 'left', padding: '10px', borderBottom: '2px solid #ccc', fontSize: '14px' }}>Severity</th>
-              <th style={{ textAlign: 'left', padding: '10px', borderBottom: '2px solid #ccc', fontSize: '14px' }}>Status</th>
-              <th style={{ textAlign: 'left', padding: '10px', borderBottom: '2px solid #ccc', fontSize: '14px' }}>Assigned To</th>
-              {/* developers get an extra column */}
-              {role === 'developer' && <th style={{ textAlign: 'left', padding: '10px', borderBottom: '2px solid #ccc', fontSize: '14px' }}>Actions</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {bugs.map((bug) => (
-              <tr key={bug.id} style={{ borderBottom: '1px solid #eee' }}>
-                <td style={{ padding: '12px' }}>{bug.id}</td>
-                <td style={{ padding: '12px' }}>{bug.title}</td>
-                <td style={{ padding: '12px' }}>{bug.severity}</td>
-                <td style={{ padding: '12px' }}>
-                  {/* colored status text */}
-                  <span style={{
-                    padding: '3px 8px',
-                    color: 'white',
-                    backgroundColor: getStatusColor(bug.status),
-                    fontSize: '13px',
-                  }}>
-                    {bug.status}
-                  </span>
-                </td>
-                <td style={{ padding: '12px' }}>{bug.assignedTo || 'Unassigned'}</td>
+      {/* main content */}
+      <div style={{ padding: '25px 30px', maxWidth: '1100px', margin: '0 auto' }}>
 
-                {/* buttons for developers to change status */}
-                {role === 'developer' && (
-                  <td style={{ padding: '12px' }}>
-                    {bug.status === 'OPEN' && (
-                      <button
-                        onClick={() => handleStatusChange(bug.id, 'IN_PROGRESS')}
-                        style={{ padding: '5px 10px', backgroundColor: '#cc9900', color: 'white', border: 'none', cursor: 'pointer' }}
-                      >
-                        Start Working
-                      </button>
-                    )}
-                    {bug.status === 'IN_PROGRESS' && (
-                      <button
-                        onClick={() => handleStatusChange(bug.id, 'RESOLVED')}
-                        style={{ padding: '5px 10px', backgroundColor: '#009933', color: 'white', border: 'none', cursor: 'pointer' }}
-                      >
-                        Mark Resolved
-                      </button>
-                    )}
-                    {(bug.status === 'RESOLVED' || bug.status === 'APPROVED') && (
-                      <span style={{ color: '#999' }}>No action needed</span>
-                    )}
-                  </td>
-                )}
+        <h2 style={{
+          fontSize: '26px',
+          marginBottom: '5px',
+          color: '#222222',
+        }}>
+          All Bug Reports
+        </h2>
+        <p style={{
+          fontSize: '15px',
+          color: '#555555',
+          marginBottom: '25px',
+        }}>
+          View and manage all reported bugs across projects.
+        </p>
+
+        {/* error message */}
+        {error && (
+          <div style={{ padding: '10px', backgroundColor: '#f8d7da', color: '#721c24', border: '1px solid #f5c6cb', marginBottom: '15px', fontSize: '14px' }}>
+            {error}
+          </div>
+        )}
+
+        {/* if theres no bugs show a message */}
+        {bugs.length === 0 ? (
+          <p style={{ color: '#555555', fontSize: '14px' }}>No bugs reported yet.</p>
+        ) : (
+          // bug table
+          <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #cccccc' }}>
+            <thead>
+              <tr style={{ backgroundColor: '#f0f0f0' }}>
+                <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid #cccccc', fontSize: '14px', color: '#333333' }}>ID</th>
+                <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid #cccccc', fontSize: '14px', color: '#333333' }}>Title</th>
+                <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid #cccccc', fontSize: '14px', color: '#333333' }}>Severity</th>
+                <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid #cccccc', fontSize: '14px', color: '#333333' }}>Status</th>
+                <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid #cccccc', fontSize: '14px', color: '#333333' }}>Assigned To</th>
+                {/* developers get an extra column */}
+                {role === 'developer' && <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid #cccccc', fontSize: '14px', color: '#333333' }}>Actions</th>}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            </thead>
+            <tbody>
+              {bugs.map((bug) => (
+                <tr key={bug.id} style={{ borderBottom: '1px solid #eee' }}>
+                  <td style={{ padding: '10px', fontSize: '14px' }}>{bug.id}</td>
+                  <td style={{ padding: '10px', fontSize: '14px' }}>{bug.title}</td>
+                  <td style={{ padding: '10px', fontSize: '14px' }}>{bug.severity}</td>
+                  <td style={{ padding: '10px', fontSize: '14px' }}>
+                    {/* colored status badge */}
+                    <span style={{
+                      padding: '3px 8px',
+                      color: 'white',
+                      backgroundColor: getStatusColor(bug.status),
+                      fontSize: '13px',
+                    }}>
+                      {bug.status}
+                    </span>
+                  </td>
+                  <td style={{ padding: '10px', fontSize: '14px' }}>{bug.assignedTo || 'Unassigned'}</td>
+
+                  {/* buttons for developers to change status */}
+                  {role === 'developer' && (
+                    <td style={{ padding: '10px', fontSize: '14px' }}>
+                      {bug.status === 'OPEN' && (
+                        <button
+                          onClick={() => handleStatusChange(bug.id, 'IN_PROGRESS')}
+                          style={{ padding: '5px 10px', backgroundColor: '#cc9900', color: 'white', border: 'none', cursor: 'pointer', fontSize: '13px' }}
+                        >
+                          Start Working
+                        </button>
+                      )}
+                      {bug.status === 'IN_PROGRESS' && (
+                        <button
+                          onClick={() => handleStatusChange(bug.id, 'RESOLVED')}
+                          style={{ padding: '5px 10px', backgroundColor: '#009933', color: 'white', border: 'none', cursor: 'pointer', fontSize: '13px' }}
+                        >
+                          Mark Resolved
+                        </button>
+                      )}
+                      {(bug.status === 'RESOLVED' || bug.status === 'APPROVED') && (
+                        <span style={{ color: '#999', fontSize: '13px' }}>No action needed</span>
+                      )}
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }
