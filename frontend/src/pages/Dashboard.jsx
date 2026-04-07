@@ -235,6 +235,10 @@ function Dashboard() {
               <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid #cccccc', fontSize: '14px', color: '#333333' }}>Severity</th>
               <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid #cccccc', fontSize: '14px', color: '#333333' }}>Status</th>
               <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid #cccccc', fontSize: '14px', color: '#333333' }}>Date</th>
+              {/* Rate column - lets the user pick a number 1-5 to rate how bad/important the bug is */}
+              {/* the dropdown plus button is just for the UI right now, the backend route is not built yet */}
+              {/* once the ratings endpoint is ready we will hook the button up to a real API call */}
+              <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid #cccccc', fontSize: '14px', color: '#333333' }}>Rate</th>
             </tr>
           </thead>
           <tbody>
@@ -242,7 +246,7 @@ function Dashboard() {
             {/* otherwise loop through the recentBugs array and make a row for each one */}
             {recentBugs.length === 0 ? (
               <tr>
-                <td colSpan="5" style={{ padding: '20px', textAlign: 'center', color: '#999999', fontSize: '14px' }}>
+                <td colSpan="6" style={{ padding: '20px', textAlign: 'center', color: '#999999', fontSize: '14px' }}>
                   No bugs reported yet.
                 </td>
               </tr>
@@ -268,6 +272,30 @@ function Dashboard() {
                   {/* show the date the bug was created, formatted nicely */}
                   <td style={{ padding: '10px', fontSize: '14px' }}>
                     {new Date(bug.createdAt).toLocaleDateString()}
+                  </td>
+                  {/* Rate cell - dropdown 1-5 plus a Rate button */}
+                  {/* for now the button just pops up an alert because the backend endpoint is not ready */}
+                  <td style={{ padding: '10px', fontSize: '14px' }}>
+                    <select style={{ padding: '4px', fontSize: '14px', marginRight: '6px' }}>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                    </select>
+                    <button
+                      onClick={() => alert('Rating submitted! This will connect to the backend soon.')}
+                      style={{
+                        padding: '4px 10px',
+                        fontSize: '13px',
+                        backgroundColor: '#0066cc',
+                        color: 'white',
+                        border: '1px solid #0066cc',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Rate
+                    </button>
                   </td>
                 </tr>
               ))
