@@ -69,6 +69,20 @@ function Dashboard() {
     return '#999';
   };
 
+  // helper function that returns a color based on the bug severity
+  // CRITICAL = maroon (worst, drop everything and fix it)
+  // HIGH     = red    (really bad, fix soon)
+  // MEDIUM   = orange (annoying but not urgent)
+  // LOW      = green  (small issue, can wait)
+  // anything else falls back to gray so the badge still shows up
+  const getSeverityColor = (severity) => {
+    if (severity === 'CRITICAL') return '#800000';
+    if (severity === 'HIGH') return '#cc0000';
+    if (severity === 'MEDIUM') return '#cc6600';
+    if (severity === 'LOW') return '#009933';
+    return '#999';
+  };
+
   // show a loading message while we wait for the API response
   if (loading) return <p style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>Loading dashboard...</p>;
 
@@ -257,7 +271,17 @@ function Dashboard() {
                 <tr key={bug.id} style={{ borderBottom: '1px solid #eee' }}>
                   <td style={{ padding: '10px', fontSize: '14px' }}>{bug.id}</td>
                   <td style={{ padding: '10px', fontSize: '14px' }}>{bug.title}</td>
-                  <td style={{ padding: '10px', fontSize: '14px' }}>{bug.severity}</td>
+                  {/* severity badge - colored the same way the status one is so its consistent */}
+                  <td style={{ padding: '10px', fontSize: '14px' }}>
+                    <span style={{
+                      padding: '3px 8px',
+                      color: 'white',
+                      backgroundColor: getSeverityColor(bug.severity),
+                      fontSize: '13px',
+                    }}>
+                      {bug.severity}
+                    </span>
+                  </td>
                   {/* status gets a colored background so its easy to spot */}
                   <td style={{ padding: '10px', fontSize: '14px' }}>
                     <span style={{

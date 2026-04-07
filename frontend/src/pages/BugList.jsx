@@ -16,6 +16,12 @@ function BugList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // searchText holds whatever the user is currently typing in the search box
+  // searchQuery is the value we actually filter by - it only updates when the Search button is clicked
+  // I split them up so the table doesnt re-filter on every single keystroke
+  const [searchText, setSearchText] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+
   // this runs when the page first loads
   // it checks the role and then gets the bugs
   useEffect(() => {
@@ -60,6 +66,22 @@ function BugList() {
     if (status === 'RESOLVED') return '#009933';
     if (status === 'APPROVED') return '#0066cc';
     return '#999';
+  };
+
+  // === SEARCH FILTER ===
+  // this takes the bugs array we already loaded from the backend and filters it down
+  // .filter() goes through every bug one by one and only keeps the ones where the title
+  // contains the text the user typed in the search box
+  // I made both strings lowercase so searching is not case sensitive (so "Login" matches "login")
+  // if the search box is empty we just show every bug
+  const filteredBugs = bugs.filter((bug) =>
+    bug.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // runs when the user clicks the Search button - copies the typed text into the searchQuery state
+  // which then triggers the filter above to actually run
+  const handleSearch = () => {
+    setSearchQuery(searchText);
   };
 
   // show loading text while we wait
@@ -108,6 +130,37 @@ function BugList() {
           View and manage all reported bugs across projects.
         </p>
 
+        {/* search bar - text input plus a button */}
+        {/* the input is "controlled" - its value comes from the searchText state */}
+        {/* clicking Search copies searchText into searchQuery which is what filteredBugs actually uses */}
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+          <input
+            type="text"
+            placeholder="Search bugs by title..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            style={{
+              flex: '1',
+              padding: '8px 10px',
+              fontSize: '14px',
+              border: '1px solid #cccccc',
+            }}
+          />
+          <button
+            onClick={handleSearch}
+            style={{
+              padding: '8px 18px',
+              backgroundColor: '#0066cc',
+              color: 'white',
+              border: '1px solid #0066cc',
+              cursor: 'pointer',
+              fontSize: '14px',
+            }}
+          >
+            Search
+          </button>
+        </div>
+
         {/* error message */}
         {error && (
           <div style={{ padding: '10px', backgroundColor: '#f8d7da', color: '#721c24', border: '1px solid #f5c6cb', marginBottom: '15px', fontSize: '14px' }}>
@@ -116,7 +169,7 @@ function BugList() {
         )}
 
         {/* if theres no bugs show a message */}
-        {bugs.length === 0 ? (
+        {filteredBugs.length === 0 ? (
           <p style={{ color: '#555555', fontSize: '14px' }}>No bugs reported yet.</p>
         ) : (
           // bug table
@@ -133,7 +186,7 @@ function BugList() {
               </tr>
             </thead>
             <tbody>
-              {bugs.map((bug) => (
+              {filteredBugs.map((bug) => (
                 <tr key={bug.id} style={{ borderBottom: '1px solid #eee' }}>
                   <td style={{ padding: '10px', fontSize: '14px' }}>{bug.id}</td>
                   <td style={{ padding: '10px', fontSize: '14px' }}>{bug.title}</td>
